@@ -1,5 +1,5 @@
 require('isomorphic-fetch');
-const dotenv = require('dotenv');
+require('dotenv').config();
 const Koa = require('koa');
 const KoaRouter = require('koa-router');
 const next = require('next');
@@ -8,8 +8,6 @@ const { verifyRequest } = require('@shopify/koa-shopify-auth');
 const session = require('koa-session');
 const koaBody = require('koa-body')
 
-
-dotenv.config();
 const { default: graphQLProxy } = require('@shopify/koa-shopify-graphql-proxy');
 const { ApiVersion } = require('@shopify/koa-shopify-graphql-proxy');
 
@@ -61,7 +59,7 @@ server.use(router.allowedMethods());
 server.use(router.routes());
 
 app.prepare().then(() => {
-  
+
   server.use(session({ sameSite: 'none', secure: true }, server));
   server.keys = [SHOPIFY_API_SECRET_KEY];
 
@@ -90,8 +88,6 @@ app.prepare().then(() => {
   server.use(graphQLProxy({ version: ApiVersion.October19 }))
   server.use(verifyRequest());
 
-  
-
   server.use(async (ctx) => {
     await handle(ctx.req, ctx.res);
     ctx.respond = false;
@@ -99,8 +95,6 @@ app.prepare().then(() => {
   });
 
   server.listen(port, () => {
-    console.log(SHOPIFY_API_KEY)
-    console.log(SHOPIFY_API_SECRET_KEY)
     console.log(`> Ready on http://localhost:${port}`);
   });
 
